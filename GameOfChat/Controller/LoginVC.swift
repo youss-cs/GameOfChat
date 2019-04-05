@@ -115,7 +115,7 @@ class LoginVC: UIViewController {
         AuthService.instance.loginUserWith(email: email, password: password) { (result) in
             switch result {
             case .success(_):
-                self.dismiss(animated: true)
+                self.presentMessageVC()
             case .failure(let error):
                 print(error)
             }
@@ -132,11 +132,16 @@ class LoginVC: UIViewController {
         AuthService.instance.registerUserWith(email: email, password: password, username: username, image: profileImg.image) { (res) in
             switch res {
             case .success(_) :
-                self.dismiss(animated: true)
+                self.presentMessageVC()
             case .failure(let error) :
                 print(error.localizedDescription)
             }
         }
+    }
+    
+    func presentMessageVC() {
+        let nav = UINavigationController(rootViewController: MessagesVC())
+        UIApplication.setRootView(nav)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {

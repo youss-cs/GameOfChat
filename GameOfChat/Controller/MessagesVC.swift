@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HomeVC: UIViewController {
+class MessagesVC: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,8 +17,6 @@ class HomeVC: UIViewController {
         setupView()
         setupNavButtons()
         checkLoginUser()
-        
-        
     }
     
     func setupView() {
@@ -28,19 +26,27 @@ class HomeVC: UIViewController {
     
     func setupNavButtons() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "LogOut", style: .plain, target: self, action: #selector(handleLogOut))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "new_message_icon"), style: .plain, target: self, action: #selector(handleNewMessage))
     }
     
     func checkLoginUser() {
-        if AuthService.instance.currentUser() == nil {
+        if let user = AuthService.instance.currentUser() {
+            self.title = user.username
+        } else {
             self.present(LoginVC(), animated: true)
         }
+    }
+    
+    @objc func handleNewMessage() {
+        let nav = UINavigationController(rootViewController: MessageVC())
+        present(nav, animated: true)
     }
 
     @objc func handleLogOut() {
         AuthService.instance.logOutCurrentUser { (result) in
             switch result {
             case .success(_):
-                self.present(LoginVC(), animated: true)
+                UIApplication.setRootView(LoginVC())
             case .failure(let error):
                 print(error)
             }

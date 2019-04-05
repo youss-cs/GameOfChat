@@ -9,6 +9,7 @@
 import Foundation
 
 let userDefaults = UserDefaults.standard
+let cellId = "cellId"
 
 //User path
 public let kID = "Id"

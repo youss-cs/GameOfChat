@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow()
         
-        window?.rootViewController = UINavigationController(rootViewController: HomeVC())
+        window?.rootViewController = UINavigationController(rootViewController: MessagesVC())
         window?.makeKeyAndVisible()
         
         return true
