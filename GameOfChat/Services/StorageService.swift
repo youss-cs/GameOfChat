@@ -9,14 +9,19 @@
 import Foundation
 import FirebaseStorage
 
+enum StorageError: Error {
+    case noImage
+}
+
 class StorageService {
     
     static let instance = StorageService()
     private let reference = Storage.storage().reference()
     
-    func uploadImage(image: UIImage, path: String, completion: @escaping (_ imageURL: String?) -> ()) {
+    func uploadImage(image: UIImage, path: String, completion: @escaping (_ result: Result<String,Error>) -> ()) {
+        
         guard let data = image.jpegData(compressionQuality: 0.4) else {
-            completion(nil)
+            completion(.failure(StorageError.noImage))
             return
         }
         
@@ -27,18 +32,23 @@ class StorageService {
         let storageRef = reference.child(path).child(imageName)
         
         storageRef.putData(data, metadata: metadata) { (meta, error) in
-            if error != nil {
-                completion(nil)
+            if let err = error {
+                completion(.failure(err))
                 return
             }
             
             storageRef.downloadURL(completion: { (url, error) in
-                guard let imageURL = url?.absoluteString else {
-                    completion(nil)
+                if let err = error {
+                    completion(.failure(err))
                     return
                 }
                 
-                completion(imageURL)
+                guard let downloadURL = url else {
+                    completion(.failure(StorageError.noImage))
+                    return
+                }
+                
+                completion(.success(downloadURL.absoluteString))
             })
         }
         

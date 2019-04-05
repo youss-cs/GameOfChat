@@ -26,19 +26,20 @@ class AuthService {
     
     //MARK: Login function
     
-    func loginUserWith(email: String, password: String, completion: @escaping (_ error: Error?) -> Void) {
+    func loginUserWith(email: String, password: String, completion: @escaping (Result<Bool,Error>) -> Void) {
         Auth.auth().signIn(withEmail: email, password: password, completion: { (firUser, error) in
             
-            if error != nil {
-                completion(error)
+            if let error = error {
+                completion(.failure(error))
                 return
-            } else {
-                //get user from firebase and save locally
-                UserService.instance.fetchUser(userId: firUser!.user.uid, completion: { (user) in
-                    self.saveUserLocally(user: user)
-                    completion(nil)
-                })
             }
+            
+            //get user from firebase and save locally
+            UserService.instance.fetchUser(userId: firUser!.user.uid, completion: { (user) in
+                self.saveUserLocally(user: user)
+                completion(.success(true))
+            })
+            
         })
     }
     
@@ -57,8 +58,8 @@ class AuthService {
                 return
             }
             
-            let token = Messaging.messaging().fcmToken ?? ""
-            var dict: [String : Any] = [kID : fuser.uid, kEMAIL : fuser.email!, kUSERNAME : username, kTOKEN : token]
+            //let token = Messaging.messaging().fcmToken ?? ""
+            var dict: [String : Any] = [kID : fuser.uid, kEMAIL : fuser.email!, kUSERNAME : username]
             
             guard let image = image else {
                 self.saveUser(dictionary: dict)
@@ -66,28 +67,30 @@ class AuthService {
                 return
             }
             
-            StorageService.instance.uploadImage(image: image, path: kPROFILE, completion: { (imageURL) in
-                if let imageURL = imageURL {
-                    dict[kPROFILEIMAGEURL] = imageURL
+            StorageService.instance.uploadImage(image: image, path: kPROFILE, completion: { (result) in
+                switch result {
+                case .success(let avatar):
+                    dict[kPROFILEIMAGEURL] = avatar
                     self.saveUser(dictionary: dict)
+                    completion(.success(true))
+                case .failure(let error):
+                    completion(.failure(error))
                 }
-                completion(.success(true))
             })
         })
     }
     
     //MARK: LogOut func
     
-     func logOutCurrentUser(completion: @escaping (_ success: Bool) -> Void) {
+     func logOutCurrentUser(completion: @escaping (Result<Bool,Error>) -> Void) {
         userDefaults.removeObject(forKey: kCURRENTUSER)
         userDefaults.synchronize()
         
         do {
             try Auth.auth().signOut()
-            completion(true)
-        } catch let error as NSError {
-            completion(false)
-            print(error.localizedDescription)
+            completion(.success(true))
+        } catch let error {
+            completion(.failure(error))
         }
     }
     

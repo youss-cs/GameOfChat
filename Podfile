@@ -12,6 +12,6 @@ target 'GameOfChat' do
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
   pod 'Firebase/Storage'
-  pod 'Firebase/Messaging'
+  pod 'SDWebImage'
 
 end
