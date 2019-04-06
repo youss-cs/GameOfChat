@@ -33,7 +33,7 @@ class MessagesVC: UITableViewController {
         if let user = AuthService.instance.currentUser() {
             self.title = user.username
         } else {
-            self.present(LoginVC(), animated: true)
+            UIApplication.setRootView(LoginVC())
         }
     }
     

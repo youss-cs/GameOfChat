@@ -15,10 +15,12 @@ class LoginVC: UIViewController {
     var emailFieldHeight: NSLayoutConstraint?
     var passwordFieldHeight: NSLayoutConstraint?
     
-    let profileImg: UIImageView = {
+    lazy var profileImg: UIImageView = {
         let img = UIImageView()
         img.image = UIImage(named: "gameofthrones_splash")
         img.contentMode = .scaleAspectFit
+        img.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTapProfileImg)))
+        img.isUserInteractionEnabled = true
         return img
     }()
     
@@ -29,6 +31,13 @@ class LoginVC: UIViewController {
         seg.addTarget(self, action: #selector(handleLoginRegisterChange), for: .valueChanged)
         return seg
     }()
+    
+    @objc func handleTapProfileImg() {
+        let imgPicker = UIImagePickerController()
+        imgPicker.delegate = self
+        imgPicker.allowsEditing = true
+        present(imgPicker, animated: true)
+    }
     
     @objc func handleLoginRegisterChange() {
         let title = loginRegisterSegmentedControl.titleForSegment(at: loginRegisterSegmentedControl.selectedSegmentIndex)
@@ -199,4 +208,23 @@ class LoginVC: UIViewController {
         stack.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
 
+}
+
+extension LoginVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        var selectedImg: UIImage?
+        
+        if let editedImg = info[.editedImage] as? UIImage {
+            selectedImg = editedImg
+        } else if let originalImg = info[.originalImage] as? UIImage  {
+            selectedImg = originalImg
+        }
+        
+        profileImg.image = selectedImg
+        dismiss(animated: true)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true)
+    }
 }
