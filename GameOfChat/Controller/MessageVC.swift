@@ -49,11 +49,13 @@ extension MessageVC {
         return users.count
     }
     
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 72
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
-        cell.textLabel?.text = users[indexPath.row].username
-        cell.detailTextLabel?.text = users[indexPath.row].email
-        //cell.user = users[indexPath.row]
+        cell.user = users[indexPath.row]
         return cell
     }
 }
