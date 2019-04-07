@@ -1,5 +1,5 @@
 //
-//  MessageVC.swift
+//  NewMessageController.swift
 //  GameOfChat
 //
 //  Created by YouSS on 4/5/19.
@@ -8,8 +8,9 @@
 
 import UIKit
 
-class MessageVC: UITableViewController {
+class NewMessageController: UITableViewController {
     
+    var messagesController: MessagesController?
     var users = [User]()
 
     override func viewDidLoad() {
@@ -44,7 +45,7 @@ class MessageVC: UITableViewController {
 }
 
 
-extension MessageVC {
+extension NewMessageController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return users.count
     }
@@ -57,5 +58,12 @@ extension MessageVC {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
         cell.user = users[indexPath.row]
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let user = users[indexPath.row]
+        dismiss(animated: true) {
+            self.messagesController?.showChatController(user: user)
+        }
     }
 }

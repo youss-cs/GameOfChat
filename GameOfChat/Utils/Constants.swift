@@ -18,7 +18,13 @@ public let kUSERNAME = "username"
 public let kPROFILEIMAGEURLIMAGEURL = "profileImageURL"
 public let kPROFILEIMAGEURL = "avatar"
 public let kCURRENTUSER = "currentUser"
-public let kTOKEN = "fcmToken"
+
+
+//Message
+public let kTEXT = "text"
+public let kTOID = "toId"
+public let kFROMID = "fromId"
+public let kSENTDATE = "sentDate"
 
 //Storage path
 public let kPROFILE = "Profile"

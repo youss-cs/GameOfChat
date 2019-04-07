@@ -1,5 +1,5 @@
 //
-//  LoginVC.swift
+//  LoginController.swift
 //  GameOfChat
 //
 //  Created by YouSS on 4/4/19.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LoginVC: UIViewController {
+class LoginController: UIViewController {
     
     var contentViewHeight: NSLayoutConstraint?
     var usernameFieldHeight: NSLayoutConstraint?
@@ -124,7 +124,7 @@ class LoginVC: UIViewController {
         AuthService.instance.loginUserWith(email: email, password: password) { (result) in
             switch result {
             case .success(_):
-                self.presentMessageVC()
+                self.presentMessageController()
             case .failure(let error):
                 print(error)
             }
@@ -141,15 +141,15 @@ class LoginVC: UIViewController {
         AuthService.instance.registerUserWith(email: email, password: password, username: username, image: profileImg.image) { (res) in
             switch res {
             case .success(_) :
-                self.presentMessageVC()
+                self.presentMessageController()
             case .failure(let error) :
                 print(error.localizedDescription)
             }
         }
     }
     
-    func presentMessageVC() {
-        let nav = UINavigationController(rootViewController: MessagesVC())
+    func presentMessageController() {
+        let nav = UINavigationController(rootViewController: MessagesController())
         UIApplication.setRootView(nav)
     }
     
@@ -210,7 +210,7 @@ class LoginVC: UIViewController {
 
 }
 
-extension LoginVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension LoginController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         var selectedImg: UIImage?
         

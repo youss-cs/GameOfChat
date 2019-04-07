@@ -20,6 +20,20 @@ class UserCell: UITableViewCell {
         }
     }
     
+    var message: Message? {
+        didSet{
+            guard let message = message else { return }
+            detailTxtLabel.text = message.text
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "hh:mm:ss a"
+            timeLabel.text = dateFormatter.string(from: message.sentDate)
+            UserService.instance.fetchUser(userId: message.toId) { (user) in
+                self.profileImageView.sd_setImage(with: URL(string: user.profileImage))
+                self.txtLabel.text = user.username
+            }
+        }
+    }
+    
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -38,6 +52,13 @@ class UserCell: UITableViewCell {
         label.font = UIFont.systemFont(ofSize: 12)
         return label
     }()
+    
+    let timeLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = UIColor.darkGray
+        return label
+    }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -53,6 +74,7 @@ class UserCell: UITableViewCell {
         addSubview(profileImageView)
         addSubview(txtLabel)
         addSubview(detailTxtLabel)
+        addSubview(timeLabel)
         
         profileImageView.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: nil, padding: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0), size: CGSize(width: 50, height: 50))
         profileImageView.layer.cornerRadius = 50 / 2
@@ -60,5 +82,6 @@ class UserCell: UITableViewCell {
         
         txtLabel.anchor(top: profileImageView.topAnchor, leading: profileImageView.trailingAnchor, bottom: nil, trailing: trailingAnchor, padding: UIEdgeInsets(top: 5, left: 8, bottom: 0, right: 8))
         detailTxtLabel.anchor(top: txtLabel.bottomAnchor, leading: profileImageView.trailingAnchor, bottom: nil, trailing: trailingAnchor, padding: UIEdgeInsets(top: 5, left: 8, bottom: 0, right: 8))
+        timeLabel.anchor(top: profileImageView.topAnchor, leading: nil, bottom: nil, trailing: trailingAnchor, padding: UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 0), size: CGSize(width: 100, height: 0))
     }
 }

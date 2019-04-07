@@ -8,14 +8,10 @@
 
 import Foundation
 import FirebaseFirestore
-import FirebaseStorage
 
 enum FCollectionReference: String {
     case Users
-    case Posts
-    case Following
-    case Comments
-    case Likes
+    case Messages
 }
 
 func reference(_ collectionReference: FCollectionReference) -> CollectionReference {
