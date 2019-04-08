@@ -20,7 +20,7 @@ class MessagesController: UITableViewController {
         setupView()
         setupNavButtons()
         checkLoginUser()
-        observeMessages()
+        observeUserMessages()
     }
     
     func setupView() {
@@ -29,20 +29,27 @@ class MessagesController: UITableViewController {
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
     }
     
-    func observeMessages() {
-        reference(.Messages).order(by: kSENTDATE).addSnapshotListener { (snapshot, error) in
+    func observeUserMessages() {
+        guard let userId = AuthService.shared.currentUser()?.id else { return }
+        reference(.Chats).document(userId).collection("Messages").addSnapshotListener { (snapshot, error) in
             guard let snapshot = snapshot else { return }
             
-            snapshot.documents.forEach({ (snapshot) in
-                guard let message = Message(dictionary: snapshot.dataWithId()) else { return }
-                self.messagesDict[message.toId] = message
-                self.messages = Array(self.messagesDict.values)
-                self.messages.sort(by: { (msg1, msg2) -> Bool in
-                    return msg1.sentDate.compare(msg2.sentDate) == .orderedDescending
+            snapshot.documentChanges.forEach({ (change) in
+                MessageService.shared.fetchMessage(messageId: change.document.documentID, completion: { (result) in
+                    switch result {
+                    case .success(let message):
+                        guard let id = message.chatPartnerId else { return }
+                        self.messagesDict[id] = message
+                        self.messages = Array(self.messagesDict.values)
+                        self.messages.sort(by: { (msg1, msg2) -> Bool in
+                            return msg1.sentDate.compare(msg2.sentDate) == .orderedDescending
+                        })
+                        self.tableView.reloadData()
+                    case .failure(let error):
+                        print(error)
+                    }
                 })
-                self.tableView.reloadData()
             })
-            
         }
     }
     
@@ -58,7 +65,7 @@ class MessagesController: UITableViewController {
     }
     
     func checkLoginUser() {
-        if let user = AuthService.instance.currentUser() {
+        if let user = AuthService.shared.currentUser() {
             self.title = user.username
         } else {
             UIApplication.setRootView(LoginController())
@@ -73,7 +80,7 @@ class MessagesController: UITableViewController {
     }
 
     @objc func handleLogOut() {
-        AuthService.instance.logOutCurrentUser { (result) in
+        AuthService.shared.logOutCurrentUser { (result) in
             switch result {
             case .success(_):
                 UIApplication.setRootView(LoginController())

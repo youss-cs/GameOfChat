@@ -121,7 +121,7 @@ class LoginController: UIViewController {
     func handleLogin() {
         guard let email = emailField.text, let password = passwordField.text else { return }
         
-        AuthService.instance.loginUserWith(email: email, password: password) { (result) in
+        AuthService.shared.loginUserWith(email: email, password: password) { (result) in
             switch result {
             case .success(_):
                 self.presentMessageController()
@@ -138,7 +138,7 @@ class LoginController: UIViewController {
         guard let password = passwordField.text, password.count > 0 else { return }
         guard let username = usernameField.text, username.count > 0 else { return }
         
-        AuthService.instance.registerUserWith(email: email, password: password, username: username, image: profileImg.image) { (res) in
+        AuthService.shared.registerUserWith(email: email, password: password, username: username, image: profileImg.image) { (res) in
             switch res {
             case .success(_) :
                 self.presentMessageController()

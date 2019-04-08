@@ -26,6 +26,11 @@ class Message {
         ]
     }
     
+    var chatPartnerId: String? {
+        guard let currentId = AuthService.shared.currentUser()?.id else { return nil }
+        return fromId == currentId ? toId : fromId
+    }
+    
     //MARK: Initializers
     
     init?(dictionary: [String : Any]) {

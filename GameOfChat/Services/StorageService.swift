@@ -15,7 +15,7 @@ enum StorageError: Error {
 
 class StorageService {
     
-    static let instance = StorageService()
+    static let shared = StorageService()
     private let reference = Storage.storage().reference()
     
     func uploadImage(image: UIImage, path: String, completion: @escaping (_ result: Result<String,Error>) -> ()) {

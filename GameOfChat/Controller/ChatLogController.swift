@@ -62,7 +62,7 @@ class ChatLogController: UICollectionViewController {
     }
     
     @objc func handleSend() {
-        guard let fromId = AuthService.instance.currentUser()?.id else { return }
+        guard let fromId = AuthService.shared.currentUser()?.id else { return }
         guard let toId = user?.id else { return }
         guard let text = inputTextField.text else { return }
         

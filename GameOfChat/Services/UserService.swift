@@ -10,7 +10,7 @@ import Firebase
 
 class UserService {
     
-    static let instance = UserService()
+    static let shared = UserService()
     
     //MARK: Fetch User funcs
     
@@ -24,7 +24,7 @@ class UserService {
     }
     
     func fetchUsers(completion: @escaping (_ users: [User]) -> Void) {
-        guard let loggedUserId = AuthService.instance.currentUser()?.id else { return }
+        guard let loggedUserId = AuthService.shared.currentUser()?.id else { return }
         
         var users = [User]()
         reference(.Users).order(by: "username").getDocuments { (snapshot, error) in

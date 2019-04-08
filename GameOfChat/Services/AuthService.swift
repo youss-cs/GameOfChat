@@ -11,7 +11,7 @@ import Firebase
 
 class AuthService {
     
-    static let instance = AuthService()
+    static let shared = AuthService()
     
     //MARK: Returning current user funcs
     
@@ -35,7 +35,7 @@ class AuthService {
             }
             
             //get user from firebase and save locally
-            UserService.instance.fetchUser(userId: firUser!.user.uid, completion: { (user) in
+            UserService.shared.fetchUser(userId: firUser!.user.uid, completion: { (user) in
                 self.saveUserLocally(user: user)
                 completion(.success(true))
             })
@@ -67,7 +67,7 @@ class AuthService {
                 return
             }
             
-            StorageService.instance.uploadImage(image: image, path: kPROFILE, completion: { (result) in
+            StorageService.shared.uploadImage(image: image, path: kPROFILE, completion: { (result) in
                 switch result {
                 case .success(let avatar):
                     dict[kPROFILEIMAGEURL] = avatar

@@ -23,11 +23,14 @@ class UserCell: UITableViewCell {
     var message: Message? {
         didSet{
             guard let message = message else { return }
+            guard let partnerId = message.chatPartnerId else { return }
+            
             detailTxtLabel.text = message.text
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "hh:mm:ss a"
             timeLabel.text = dateFormatter.string(from: message.sentDate)
-            UserService.instance.fetchUser(userId: message.toId) { (user) in
+            
+            UserService.shared.fetchUser(userId: partnerId) { (user) in
                 self.profileImageView.sd_setImage(with: URL(string: user.profileImage))
                 self.txtLabel.text = user.username
             }
