@@ -30,9 +30,14 @@ class UserCell: UITableViewCell {
             dateFormatter.dateFormat = "hh:mm:ss a"
             timeLabel.text = dateFormatter.string(from: message.sentDate)
             
-            UserService.shared.fetchUser(userId: partnerId) { (user) in
-                self.profileImageView.sd_setImage(with: URL(string: user.profileImage))
-                self.txtLabel.text = user.username
+            UserService.shared.fetchUser(userId: partnerId) { (result) in
+                switch result {
+                case .success(let user):
+                    self.profileImageView.sd_setImage(with: URL(string: user.profileImage))
+                    self.txtLabel.text = user.username
+                case .failure(let error):
+                    print(error)
+                }
             }
         }
     }

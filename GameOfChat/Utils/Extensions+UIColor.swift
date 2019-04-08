@@ -1,5 +1,5 @@
 //
-//  UIColorExt.swift
+//  Extensions+UIColor.swift
 //  InstaFirebase
 //
 //  Created by YouSS on 12/5/18.
@@ -15,5 +15,9 @@ extension UIColor {
     
     static func mainBlue() -> UIColor {
         return rgb(17, 154, 237)
+    }
+    
+    static var blueColor: UIColor {
+        return rgb(0, 137, 249)
     }
 }

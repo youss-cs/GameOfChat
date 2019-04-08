@@ -34,10 +34,19 @@ class AuthService {
                 return
             }
             
-            //get user from firebase and save locally
-            UserService.shared.fetchUser(userId: firUser!.user.uid, completion: { (user) in
-                self.saveUserLocally(user: user)
-                completion(.success(true))
+            guard let userId = firUser?.user.uid else {
+                completion(.failure(AuthError.noUser))
+                return
+            }
+            
+            UserService.shared.fetchUser(userId: userId, completion: { (result) in
+                switch result {
+                case .success(let user):
+                    self.saveUserLocally(user: user)
+                    completion(.success(true))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
             })
             
         })

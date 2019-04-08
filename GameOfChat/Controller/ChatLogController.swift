@@ -11,6 +11,8 @@ import Firebase
 
 class ChatLogController: UICollectionViewController {
 
+    var messages = [Message]()
+    
     var user: User? {
         didSet{
             navigationItem.title = user?.username
@@ -34,9 +36,14 @@ class ChatLogController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        collectionView?.backgroundColor = UIColor.white
+        collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 58, right: 0)
+        collectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
+        collectionView.alwaysBounceVertical = true
+        collectionView.backgroundColor = UIColor.white
+        collectionView.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         
         setupInputComponents()
+        observeMessages()
     }
     
     func setupInputComponents() {
@@ -75,7 +82,68 @@ class ChatLogController: UICollectionViewController {
         
         guard let message = Message(dictionary: dict) else { return }
         
-        MessageService.shared.addMessage(message: message)
+        MessageService.shared.addMessage(message: message) { (result) in
+            switch result {
+            case .success(_):
+                self.inputTextField.text = ""
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func observeMessages(){
+        guard let userId = AuthService.shared.currentUser()?.id else { return }
+        reference(.Chats).document(userId).collection("Messages").addSnapshotListener { (snapshot, error) in
+            guard let snapshot = snapshot else { return }
+            
+            snapshot.documentChanges.forEach({ (change) in
+                self.handleDocumentChange(change)
+            })
+        }
+        reference(.Users).addSnapshotListener { (snapshot, error) in
+            guard let snapshot = snapshot else { return }
+            
+            snapshot.documentChanges.forEach({ (change) in
+                self.handleDocumentChange(change)
+            })
+        }
+    }
+    
+    func handleDocumentChange(_ change: DocumentChange) {
+        switch change.type {
+        case .added:
+            MessageService.shared.fetchMessage(messageId: change.document.documentID, completion: { (result) in
+                switch result {
+                case .success(let message):
+                    if message.chatPartnerId == self.user?.id {
+                        self.messages.append(message)
+                        self.collectionView.reloadData()
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            })
+        default: break
+        }
+    }
+    
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        collectionView?.collectionViewLayout.invalidateLayout()
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return messages.count
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ChatMessageCell
+        
+        cell.message = messages[indexPath.item]
+        if let profileImageURL = self.user?.profileImage {
+            cell.profileImageView.sd_setImage(with: URL(string: profileImageURL))
+        }
+        return cell
     }
 }
 
@@ -85,3 +153,12 @@ extension ChatLogController: UITextFieldDelegate {
         return true
     }
 }
+
+extension ChatLogController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let text = messages[indexPath.item].text
+        let height = text.estimateFrameForText(fontSize: 16).height + 20
+        return CGSize(width: view.frame.width, height: height)
+    }
+}
+

@@ -12,6 +12,7 @@ class MessagesController: UITableViewController {
 
     var messages = [Message]()
     var messagesDict = [String : Message]()
+    var timer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,13 +45,22 @@ class MessagesController: UITableViewController {
                         self.messages.sort(by: { (msg1, msg2) -> Bool in
                             return msg1.sentDate.compare(msg2.sentDate) == .orderedDescending
                         })
-                        self.tableView.reloadData()
+                        
+                        self.timer?.invalidate()
+                        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
                     case .failure(let error):
                         print(error)
                     }
                 })
             })
         }
+    }
+    
+    @objc func handleReloadTable() {
+        //this will crash because of background thread, so lets call this on dispatch_async main thread
+        DispatchQueue.main.async(execute: {
+            self.tableView.reloadData()
+        })
     }
     
     func setupNavButtons() {
@@ -105,6 +115,19 @@ extension MessagesController {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
         cell.message = messages[indexPath.row]
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let message = messages[indexPath.row]
+        guard let partnerId = message.chatPartnerId else { return }
+        UserService.shared.fetchUser(userId: partnerId) { (result) in
+            switch result {
+            case .success(let user):
+                self.showChatController(user: user)
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 }
 

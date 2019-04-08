@@ -14,12 +14,17 @@ class UserService {
     
     //MARK: Fetch User funcs
     
-    func fetchUser(userId: String, completion: @escaping (_ user: User) -> Void) {
+    func fetchUser(userId: String, completion: @escaping (_ result: Result<User,Error>) -> Void) {
         reference(.Users).document(userId).getDocument { (document, error) in
+            if let err = error {
+                completion(.failure(err))
+                return
+            }
+            
             guard let document = document, document.exists else { return }
             guard let dictionary = document.data() else { return }
             let user = User(dictionary: dictionary)
-            completion(user)
+            completion(.success(user))
         }
     }
     

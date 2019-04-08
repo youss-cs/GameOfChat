@@ -1,5 +1,5 @@
 //
-//  UIApplicationExt.swift
+//  Extensions+UIApplication.swift
 //  GameOfChat
 //
 //  Created by YouSS on 4/5/19.

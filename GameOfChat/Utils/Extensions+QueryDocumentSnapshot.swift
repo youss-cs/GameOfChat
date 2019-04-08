@@ -1,5 +1,5 @@
 //
-//  QueryDocumentSnapshot.swift
+//  Extensions+QueryDocumentSnapshot.swift
 //  InstaFirebase
 //
 //  Created by YouSS on 12/11/18.
