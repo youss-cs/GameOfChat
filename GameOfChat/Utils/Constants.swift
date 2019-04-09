@@ -11,6 +11,8 @@ import Foundation
 let userDefaults = UserDefaults.standard
 let cellId = "cellId"
 
+public let kDEFAULTIMG = "Avatar"
+
 //User path
 public let kID = "Id"
 public let kEMAIL = "email"

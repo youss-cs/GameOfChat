@@ -18,37 +18,20 @@ class MessageService {
     static let shared = MessageService()
     
     func addMessage(message: Message, completion: ((_ result: Result<Bool,Error>) -> Void)? = nil) {
-        var ref: DocumentReference? = nil
-        ref = reference(.Messages).addDocument(data: message.dictionary) { (error) in
+        let converId = getConversationId(uid1: message.fromId, uid2: message.toId)
+        reference(.Conversation).document(converId).collection("Messages").addDocument(data: message.dictionary) { (error) in
             if let err = error {
                 completion?(.failure(err))
                 return
             }
             
-            guard let messageId = ref?.documentID else {
-                completion?(.failure(MessageError.noMessage))
-                return
-            }
+            let fromToPath = "\(message.fromId)/Users/\(message.toId)"
+            reference(.LastestMessages).document(fromToPath).setData(message.dictionary)
             
-            reference(.Chats).document("\(message.fromId)/Messages/\(messageId)").setData(["exist" : true])
-            reference(.Chats).document("\(message.toId)/Messages/\(messageId)").setData(["exist" : true])
+            let toFromPath = "\(message.toId)/Users/\(message.fromId)"
+            reference(.LastestMessages).document(toFromPath).setData(message.dictionary)
             
             completion?(.success(true))
-        }
-    }
-    
-    func fetchMessage(messageId: String, completion: @escaping (_ result: Result<
-        Message,Error>) -> Void) {
-        reference(.Messages).document(messageId).getDocument { (document, error) in
-            if let err = error {
-                completion(.failure(err))
-                return
-            }
-            
-            guard let document = document, document.exists else { return }
-            guard let dictionary = document.data() else { return }
-            guard let message = Message(dictionary: dictionary) else { return }
-            completion(.success(message))
         }
     }
 }

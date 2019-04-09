@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class NewMessageController: UITableViewController {
     
@@ -35,10 +36,24 @@ class NewMessageController: UITableViewController {
         dismiss(animated: true)
     }
     
-    func fetchUsers() {
-        UserService.shared.fetchUsers { (users) in
-            self.users = users
-            self.tableView.reloadData()
+    func fetchUsers(){
+        reference(.Users).addSnapshotListener { (snapshot, error) in
+            guard let snapshot = snapshot else { return }
+            
+            snapshot.documentChanges.forEach({ (change) in
+                self.handleDocumentChange(change)
+            })
+        }
+    }
+    
+    func handleDocumentChange(_ change: DocumentChange) {
+        let user = User(dictionary: change.document.dataWithId())
+        switch change.type {
+        case .added:
+            users.append(user)
+            let indexPath = IndexPath(row: users.count - 1, section: 0)
+            tableView.insertRows(at: [indexPath], with: .none)
+        default: break
         }
     }
 

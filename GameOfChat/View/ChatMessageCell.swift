@@ -73,14 +73,12 @@ class ChatMessageCell: UICollectionViewCell {
         super.init(frame: frame)
         
         addSubview(bubbleView)
-        addSubview(profileImageView)
         bubbleView.addSubview(textView)
+        addSubview(profileImageView)
         
         profileImageView.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: nil, padding: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0), size: CGSize(width: 32, height: 32))
         
-        
-        
-        bubbleView.anchor(top: topAnchor, leading: nil, bottom: bottomAnchor, trailing: nil)
+        bubbleView.anchor(top: topAnchor, leading: nil,bottom: bottomAnchor, trailing: nil)
         
         bubbleViewTrailingAnchor = bubbleView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8)
         bubbleViewTrailingAnchor?.isActive = true

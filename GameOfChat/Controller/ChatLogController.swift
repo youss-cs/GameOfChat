@@ -16,92 +16,32 @@ class ChatLogController: UICollectionViewController {
     var user: User? {
         didSet{
             navigationItem.title = user?.username
+            observeMessages()
         }
     }
     
-    lazy var inputTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Enter message..."
-        textField.delegate = self
-        return textField
-    }()
-    
-    lazy var sendButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Send", for: .normal)
-        button.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
-        return button
+    lazy var containerView: ChatInputAccessoryView = {
+        let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
+        let chatInputAccessoryView = ChatInputAccessoryView(frame: frame)
+        chatInputAccessoryView.delegate = self
+        return chatInputAccessoryView
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 58, right: 0)
-        collectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
+        collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = UIColor.white
+        collectionView.keyboardDismissMode = .interactive
         collectionView.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
-        
-        setupInputComponents()
-        observeMessages()
-    }
-    
-    func setupInputComponents() {
-        let containerView = UIView()
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(containerView)
-        
-        containerView.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, size: CGSize(width: 0, height: 50))
-        
-        containerView.addSubview(sendButton)
-        containerView.addSubview(inputTextField)
-        
-        sendButton.anchor(top: containerView.topAnchor, leading: nil, bottom: containerView.safeAreaLayoutGuide.bottomAnchor, trailing: containerView.trailingAnchor, size: CGSize(width: 80, height: 0))
-        
-        inputTextField.anchor(top: containerView.topAnchor, leading: containerView.leadingAnchor, bottom: containerView.safeAreaLayoutGuide.bottomAnchor, trailing: sendButton.leadingAnchor, padding: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0))
-        
-        let separatorLineView = UIView()
-        separatorLineView.backgroundColor = UIColor.rgb(220, 220, 220)
-        containerView.addSubview(separatorLineView)
-        
-        separatorLineView.anchor(top: containerView.topAnchor, leading: containerView.leadingAnchor, bottom: nil, trailing: containerView.trailingAnchor, size: CGSize(width: 0, height: 1))
-    }
-    
-    @objc func handleSend() {
-        guard let fromId = AuthService.shared.currentUser()?.id else { return }
-        guard let toId = user?.id else { return }
-        guard let text = inputTextField.text else { return }
-        
-        let dict: [String : Any] = [
-            kTEXT: text,
-            kTOID: toId,
-            kFROMID: fromId,
-            kSENTDATE: Timestamp(date: Date())
-        ]
-        
-        guard let message = Message(dictionary: dict) else { return }
-        
-        MessageService.shared.addMessage(message: message) { (result) in
-            switch result {
-            case .success(_):
-                self.inputTextField.text = ""
-            case .failure(let error):
-                print(error)
-            }
-        }
     }
     
     func observeMessages(){
-        guard let userId = AuthService.shared.currentUser()?.id else { return }
-        reference(.Chats).document(userId).collection("Messages").addSnapshotListener { (snapshot, error) in
-            guard let snapshot = snapshot else { return }
-            
-            snapshot.documentChanges.forEach({ (change) in
-                self.handleDocumentChange(change)
-            })
-        }
-        reference(.Users).addSnapshotListener { (snapshot, error) in
+        guard let currentId = AuthService.shared.currentUser()?.id else { return }
+        guard let userId = user?.id else { return }
+        let converId = getConversationId(uid1: currentId, uid2: userId)
+        reference(.Conversation).document(converId).collection("Messages").order(by: kSENTDATE).addSnapshotListener { (snapshot, error) in
             guard let snapshot = snapshot else { return }
             
             snapshot.documentChanges.forEach({ (change) in
@@ -111,19 +51,14 @@ class ChatLogController: UICollectionViewController {
     }
     
     func handleDocumentChange(_ change: DocumentChange) {
+        let document = change.document
+        guard let message = Message(dictionary: document.dataWithId()) else { return }
+        
         switch change.type {
         case .added:
-            MessageService.shared.fetchMessage(messageId: change.document.documentID, completion: { (result) in
-                switch result {
-                case .success(let message):
-                    if message.chatPartnerId == self.user?.id {
-                        self.messages.append(message)
-                        self.collectionView.reloadData()
-                    }
-                case .failure(let error):
-                    print(error)
-                }
-            })
+            messages.append(message)
+            let indexPath = IndexPath(row: messages.count - 1, section: 0)
+            collectionView.insertItems(at: [indexPath])
         default: break
         }
     }
@@ -147,18 +82,44 @@ class ChatLogController: UICollectionViewController {
     }
 }
 
-extension ChatLogController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        handleSend()
-        return true
-    }
-}
-
 extension ChatLogController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let text = messages[indexPath.item].text
         let height = text.estimateFrameForText(fontSize: 16).height + 20
         return CGSize(width: view.frame.width, height: height)
+    }
+}
+
+extension ChatLogController: ChatInputAccessoryViewDelegate {
+    override var inputAccessoryView: UIView? {
+        get { return containerView }
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    func didSend(for text: String) {
+        guard let fromId = AuthService.shared.currentUser()?.id else { return }
+        guard let toId = user?.id else { return }
+        
+        let dict: [String : Any] = [
+            kTEXT: text,
+            kTOID: toId,
+            kFROMID: fromId,
+            kSENTDATE: Timestamp(date: Date())
+        ]
+        
+        guard let message = Message(dictionary: dict) else { return }
+        
+        MessageService.shared.addMessage(message: message) { (result) in
+            switch result {
+            case .success(_):
+                self.containerView.clearChatTextField()
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 }
 

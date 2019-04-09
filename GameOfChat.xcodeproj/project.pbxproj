@@ -11,6 +11,8 @@
 		A137C9B8225A478D00CF10C2 /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137C9B7225A478C00CF10C2 /* ChatLogController.swift */; };
 		A137C9BA225A481A00CF10C2 /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137C9B9225A481A00CF10C2 /* MessageService.swift */; };
 		A137C9BC225A48A900CF10C2 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = A137C9BB225A48A900CF10C2 /* Message.swift */; };
+		A13A16EA225CC905001D66EC /* ChatInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13A16E9225CC905001D66EC /* ChatInputAccessoryView.swift */; };
+		A13A16EC225CC92A001D66EC /* ChatInputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13A16EB225CC92A001D66EC /* ChatInputTextView.swift */; };
 		A1411B95225784B400A49C8D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A1411B94225784B400A49C8D /* GoogleService-Info.plist */; };
 		A1411B972257A67A00A49C8D /* NewMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1411B962257A67A00A49C8D /* NewMessageController.swift */; };
 		A1411B992257A80700A49C8D /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1411B982257A80700A49C8D /* UserCell.swift */; };
@@ -30,6 +32,8 @@
 		A1AFE309225648BC002EFF1C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1AFE306225648BC002EFF1C /* Constants.swift */; };
 		A1AFE30A225648BC002EFF1C /* Extensions+UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1AFE307225648BC002EFF1C /* Extensions+UIView.swift */; };
 		A1AFE30D22564B98002EFF1C /* Extensions+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1AFE30C22564B98002EFF1C /* Extensions+UIColor.swift */; };
+		A1E82D6E225D1B96004A1906 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E82D6D225D1B96004A1906 /* HelperFunctions.swift */; };
+		A1E82D70225D1DF3004A1906 /* Extensions+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E82D6F225D1DF3004A1906 /* Extensions+Date.swift */; };
 		A1F16DF4225B84EB0012961A /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F16DF3225B84EB0012961A /* ChatMessageCell.swift */; };
 		A1F16DF6225B868A0012961A /* Extensions+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F16DF5225B868A0012961A /* Extensions+String.swift */; };
 /* End PBXBuildFile section */
@@ -39,6 +43,8 @@
 		A137C9B7225A478C00CF10C2 /* ChatLogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		A137C9B9225A481A00CF10C2 /* MessageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
 		A137C9BB225A48A900CF10C2 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		A13A16E9225CC905001D66EC /* ChatInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputAccessoryView.swift; sourceTree = "<group>"; };
+		A13A16EB225CC92A001D66EC /* ChatInputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputTextView.swift; sourceTree = "<group>"; };
 		A1411B94225784B400A49C8D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A1411B962257A67A00A49C8D /* NewMessageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
 		A1411B982257A80700A49C8D /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
@@ -60,6 +66,8 @@
 		A1AFE306225648BC002EFF1C /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A1AFE307225648BC002EFF1C /* Extensions+UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Extensions+UIView.swift"; sourceTree = "<group>"; };
 		A1AFE30C22564B98002EFF1C /* Extensions+UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Extensions+UIColor.swift"; sourceTree = "<group>"; };
+		A1E82D6D225D1B96004A1906 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
+		A1E82D6F225D1DF3004A1906 /* Extensions+Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+Date.swift"; sourceTree = "<group>"; };
 		A1F16DF3225B84EB0012961A /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 		A1F16DF5225B868A0012961A /* Extensions+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+String.swift"; sourceTree = "<group>"; };
 		C80BFDB84F8061D25C79A737 /* Pods_GameOfChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GameOfChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -159,6 +167,8 @@
 			children = (
 				A1411B982257A80700A49C8D /* UserCell.swift */,
 				A1F16DF3225B84EB0012961A /* ChatMessageCell.swift */,
+				A13A16E9225CC905001D66EC /* ChatInputAccessoryView.swift */,
+				A13A16EB225CC92A001D66EC /* ChatInputTextView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -181,6 +191,8 @@
 				A170A9F022569BF70013519B /* Extensions+QueryDocumentSnapshot.swift */,
 				A1411B9A2257AFC000A49C8D /* Extensions+UIApplication.swift */,
 				A1F16DF5225B868A0012961A /* Extensions+String.swift */,
+				A1E82D6F225D1DF3004A1906 /* Extensions+Date.swift */,
+				A1E82D6D225D1B96004A1906 /* HelperFunctions.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -321,11 +333,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1AFE2EF22564619002EFF1C /* MessagesController.swift in Sources */,
+				A13A16EA225CC905001D66EC /* ChatInputAccessoryView.swift in Sources */,
+				A13A16EC225CC92A001D66EC /* ChatInputTextView.swift in Sources */,
 				A1411B972257A67A00A49C8D /* NewMessageController.swift in Sources */,
 				A1AFE30D22564B98002EFF1C /* Extensions+UIColor.swift in Sources */,
 				A137C9BC225A48A900CF10C2 /* Message.swift in Sources */,
 				A1AFE2ED22564619002EFF1C /* AppDelegate.swift in Sources */,
+				A1E82D6E225D1B96004A1906 /* HelperFunctions.swift in Sources */,
 				A170A9E9225697630013519B /* AuthService.swift in Sources */,
+				A1E82D70225D1DF3004A1906 /* Extensions+Date.swift in Sources */,
 				A1AFE304225647EC002EFF1C /* LoginControllerC.swift in Sources */,
 				A137C9BA225A481A00CF10C2 /* MessageService.swift in Sources */,
 				A1411B992257A80700A49C8D /* UserCell.swift in Sources */,

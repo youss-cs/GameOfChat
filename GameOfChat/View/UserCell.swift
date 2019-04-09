@@ -26,14 +26,12 @@ class UserCell: UITableViewCell {
             guard let partnerId = message.chatPartnerId else { return }
             
             detailTxtLabel.text = message.text
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "hh:mm:ss a"
-            timeLabel.text = dateFormatter.string(from: message.sentDate)
+            timeLabel.text = message.sentDate.string(format: "hh:mm a")
             
             UserService.shared.fetchUser(userId: partnerId) { (result) in
                 switch result {
                 case .success(let user):
-                    self.profileImageView.sd_setImage(with: URL(string: user.profileImage))
+                    self.profileImageView.sd_setImage(with: URL(string: user.profileImage), placeholderImage: UIImage(named: kDEFAULTIMG))
                     self.txtLabel.text = user.username
                 case .failure(let error):
                     print(error)

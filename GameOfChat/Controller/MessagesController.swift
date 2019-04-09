@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class MessagesController: UITableViewController {
 
@@ -32,35 +33,33 @@ class MessagesController: UITableViewController {
     
     func observeUserMessages() {
         guard let userId = AuthService.shared.currentUser()?.id else { return }
-        reference(.Chats).document(userId).collection("Messages").addSnapshotListener { (snapshot, error) in
+        reference(.LastestMessages).document(userId).collection("Users").order(by: kSENTDATE).addSnapshotListener { (snapshot, error) in
             guard let snapshot = snapshot else { return }
             
             snapshot.documentChanges.forEach({ (change) in
-                MessageService.shared.fetchMessage(messageId: change.document.documentID, completion: { (result) in
-                    switch result {
-                    case .success(let message):
-                        guard let id = message.chatPartnerId else { return }
-                        self.messagesDict[id] = message
-                        self.messages = Array(self.messagesDict.values)
-                        self.messages.sort(by: { (msg1, msg2) -> Bool in
-                            return msg1.sentDate.compare(msg2.sentDate) == .orderedDescending
-                        })
-                        
-                        self.timer?.invalidate()
-                        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
-                    case .failure(let error):
-                        print(error)
-                    }
-                })
+                self.handleDocumentChange(change)
             })
         }
     }
     
-    @objc func handleReloadTable() {
-        //this will crash because of background thread, so lets call this on dispatch_async main thread
-        DispatchQueue.main.async(execute: {
-            self.tableView.reloadData()
-        })
+    func handleDocumentChange(_ change: DocumentChange) {
+        guard let message = Message(dictionary: change.document.dataWithId()) else { return }
+        let topIndex = IndexPath(row: 0, section: 0)
+        switch change.type {
+        case .added:
+            messages.insert(message, at: 0)
+            tableView.insertRows(at: [topIndex], with: .none)
+        case .modified:
+            guard let index = messages.firstIndex(where: {$0.chatPartnerId == message.chatPartnerId}) else { return }
+            messages[index] = message
+            let indexPath = IndexPath(row: index, section: 0)
+            let cell = tableView.cellForRow(at: indexPath) as? UserCell
+            cell?.timeLabel.text = message.sentDate.string(format:" hh:mm a")
+            cell?.detailTxtLabel.text = message.text
+            messages.bringToFront(item: message)
+            tableView.moveRow(at: indexPath, to: topIndex)
+        default: break
+        }
     }
     
     func setupNavButtons() {
@@ -98,7 +97,6 @@ class MessagesController: UITableViewController {
                 print(error)
             }
         }
-        
     }
 }
 

@@ -49,3 +49,9 @@ class Message {
         self.sentDate = sentDate.dateValue()
     }
 }
+
+extension Message: Equatable {
+    static func ==(lhs: Message, rhs: Message) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
